@@ -6,7 +6,8 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import PydanticOutputParser
-from langchain.agents import create_tool_calling_agent, AgentExecutor
+from langchain_classic.agents import create_tool_calling_agent, AgentExecutor
+from tools import search_tool, wiki_tool, save_tool
 
 load_dotenv()
 
@@ -44,13 +45,22 @@ prompt = ChatPromptTemplate.from_messages(
     ]
 ).partial(format_instructions = parser.get_format_instructions)
 
+tools = [search_tool, wiki_tool, save_tool]
+
 agent = create_tool_calling_agent(
     llm = llm,
     prompt = prompt,
-    tools = []
+    tools = tools
 )
 
-agent_executor = AgentExecutor(agent=agent, tools = [], verbose = False)
+agent_executor = AgentExecutor(agent=agent, tools = tools, verbose = False)
+user_query = input("What can i help you with? ")
+raw_response = agent_executor.invoke({"query": user_query})
+#print(raw_response)
 
-raw_response = agent_executor.invoke({"query": "What is a trust in finance"})
-print(raw_response)
+try:
+    structure_output = parser.parse(raw_response.get("output"))
+    print(structure_output)
+except Exception as e:
+    print("Error exception", e, "Raw response ->", raw_response)
+
