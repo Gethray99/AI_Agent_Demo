@@ -8,3 +8,4 @@ pydantic
 langchain-google-genai
 langchain-groq
 duckduckgo-search
+langchain-classic
