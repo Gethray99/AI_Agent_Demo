@@ -16,6 +16,8 @@ def save_to_txt(data: str, filename: str = "research_output.txt"):
 
 search = DuckDuckGoSearchRun()
 
+search_tool_new = DuckDuckGoSearchRun()
+
 search_tool = Tool(
     name="search",
     func=search.run,
